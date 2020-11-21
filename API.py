@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config['MySQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'luqmanklaten060800'
-app.config['MYSQL_DB'] = 'world'
+app.config['MYSQL_DB'] = 'rental_mobil'
 app.config["DEBUG"] = True
 mysql = MySQL(app)
 # Create some test data for our catalog in the form of a list of dictionaries.
@@ -36,7 +36,7 @@ books = [
 @app.route('/', methods=['GET'])
 def home():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM city")
+    cur.execute("SELECT * FROM daftar_mobil")
     row_headers=[x[0] for x in cur.description]
     rv = cur.fetchall()
     json_data=[]
