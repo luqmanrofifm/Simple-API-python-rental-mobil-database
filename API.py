@@ -6,8 +6,8 @@ from flask_mysqldb import MySQL
 app = Flask(__name__)
 app.config['MySQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root' #isi dengan user mu 
-app.config['MYSQL_PASSWORD'] = '###### ' #isi dengan passwordmu
-app.config['MYSQL_DB'] = 'rental_mobil'
+app.config['MYSQL_PASSWORD'] = '######' #isi dengan passwordmu
+app.config['MYSQL_DB'] = 'rental_mobil' #isi databasemu
 app.config["DEBUG"] = True
 mysql = MySQL(app)
 
@@ -21,18 +21,13 @@ def home():
     for result in rv:
         json_data.append(dict(zip(row_headers,result)))
     return jsonify(json_data)
-    #cur.close()
-#    return '''<h1>Distant Reading Archive</h1>
-#<p>A prototype API for distant reading of science fiction novels.</p>'''
 
-
-# A route to return all of the available entries in our catalog.
-#@app.route('/api/v1/resources/books/all', methods=['GET'])
-#def api_all():
-#    return jsonify(books)
+@app.route('/reservemobil', methods=['POST'])
 def createReservation():
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO coba (name, class, description) VALUES (%s, %s, %s)")
+    cur.execute("INSERT INTO daftar_mobil (car_id, car_name, car_type, hire_cost) VALUES (%d, %s, %s, %d)")
+    mysql.commit()
+    return "Reserved"
 
 
 app.run()
