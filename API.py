@@ -16,12 +16,12 @@ def home():
 def list_car():
     try:
         db = mysql.connector.connect(host="localhost",
-                                     user="root",
-                                     passwd="luqmanklaten060800",
-                                     database="rental_mobil"
+                                     user="root", #use your username
+                                     passwd="############", #use your password
+                                     database="xxxxxxxx" #add the database you want to access
                                     )
         cur = db.cursor()
-        cur.execute("SELECT * FROM daftar_mobil")
+        cur.execute("SELECT * FROM daftar_mobil") #change daftar mobil with the table you want access
         row_headers=[x[0] for x in cur.description]
         rv = cur.fetchall()
         json_data=[]
@@ -43,12 +43,12 @@ def createReservation():
         carType = request.form['car_type']
         hireCost = request.form['hire_cost']		
         if carID and carName and carType and hireCost and request.method == 'POST':			
-            sqlQuery = "INSERT INTO daftar_mobil(car_id, car_name, car_type, hire_cost) VALUES(%s, %s, %s, %s)"
+            sqlQuery = "INSERT INTO daftar_mobil(car_id, car_name, car_type, hire_cost) VALUES(%s, %s, %s, %s)" #change daftar mobil and column name with the table you want access
             bindData = (carID, carName, carType, hireCost)
             db = mysql.connector.connect(host="localhost",
-                                         user="root",
-                                         passwd="luqmanklaten060800",
-                                         database="rental_mobil"
+                                         user="root", #use your username
+                                         passwd="##########", #use your password
+                                         database="xxxxxxxxx"  #add the database you want to access
                                         )
             cursor = db.cursor()
             cursor.execute(sqlQuery, bindData)
