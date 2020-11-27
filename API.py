@@ -1,15 +1,11 @@
 import flask
+import mysql.connector
 from flask import request, jsonify
 from flask import Flask, render_template, request, url_for, redirect
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
-app.config['MySQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root' #isi dengan user mu 
-app.config['MYSQL_PASSWORD'] = 'luqmanklaten060800' #isi dengan passwordmu
-app.config['MYSQL_DB'] = 'rental_mobil' #isi databasemu
 app.config["DEBUG"] = True
-mysql = MySQL(app)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -18,29 +14,54 @@ def home():
 
 @app.route('/listcar', methods=['GET'])
 def list_car():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM daftar_mobil")
-    row_headers=[x[0] for x in cur.description]
-    rv = cur.fetchall()
-    json_data=[]
-    for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
-    return jsonify(json_data)
+    try:
+        db = mysql.connector.connect(host="localhost",
+                                     user="root",
+                                     passwd="luqmanklaten060800",
+                                     database="rental_mobil"
+                                    )
+        cur = db.cursor()
+        cur.execute("SELECT * FROM daftar_mobil")
+        row_headers=[x[0] for x in cur.description]
+        rv = cur.fetchall()
+        json_data=[]
+        for result in rv:
+            json_data.append(dict(zip(row_headers,result)))
+        return jsonify(json_data)
+    except Exception as e:
+        print(e)
+    finally:
+        cur.close() 
+        db.close()
 
 @app.route('/reservemobil', methods=['POST'])
-def createReservation():
-    _json = request.json
-    _car_id = _json['car_id']
-    _car_name = _json['car_name']
-    _car_type = _json['car_type']
-    _hire_cost = _json['hire_cost']
-    curPost = mysql.connection.cursor()
-    query = "INSERT INTO daftar_mobil (car_id, car_name, car_type, hire_cost) VALUES (%d, %s, %s, %d)"
-    data = (_car_id, _car_name, _car_type, _hire_cost)
-    curPost.execute( query, data)
-    mysql.commit()
-    resp = jsonify('Car reservation added successfully!')
-    return resp
-
+def createReservation():   
+    try:
+        _json = request.form
+        carID = request.form['car_id']
+        carName = request.form['car_name']
+        carType = request.form['car_type']
+        hireCost = request.form['hire_cost']		
+        if carID and carName and carType and hireCost and request.method == 'POST':			
+            sqlQuery = "INSERT INTO daftar_mobil(car_id, car_name, car_type, hire_cost) VALUES(%s, %s, %s, %s)"
+            bindData = (carID, carName, carType, hireCost)
+            db = mysql.connector.connect(host="localhost",
+                                         user="root",
+                                         passwd="luqmanklaten060800",
+                                         database="rental_mobil"
+                                        )
+            cursor = db.cursor()
+            cursor.execute(sqlQuery, bindData)
+            db.commit()
+            respone = jsonify('Employee added successfully!')
+            respone.status_code = 200
+            return respone
+        else:
+            return not_found()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close() 
+        db.close()
 
 app.run()
